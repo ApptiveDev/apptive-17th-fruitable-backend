@@ -1,8 +1,9 @@
-package apptive.fruitable.domain;
+package apptive.fruitable.domain.post;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,16 +11,18 @@ import java.time.LocalDateTime;
 
 //추후 @Table로 users 테이블과 매핑 필요
 @Entity
-@Getter
+@Getter @Setter
 @NoArgsConstructor
-@Table(name = "post")
+@Table
 public class Post {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @Column
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     //회원 정보 (Userid - 외래키(@Column), contact - 직접 받아옴)
-    private String Userid;
+    @Column
+    private String userId;
     @Column(length = 100, nullable = false)
     private String contact;
 
@@ -31,11 +34,20 @@ public class Post {
     @Column(nullable = false)
     private int price;
     //사진
+    @Column
     private LocalDateTime endDate; //마감기한
 
     @Builder
-    public Post(String UserId, String title, String content, int price, LocalDateTime endDate) {
-        this.Userid = UserId;
+    public Post(Long id,
+                String userId,
+                String contact,
+                String title,
+                String content,
+                int price,
+                LocalDateTime endDate) {
+        this.id = id;
+        this.userId = userId;
+        this.contact = contact;
         this.title = title;
         this.content = content;
         this.price = price;
