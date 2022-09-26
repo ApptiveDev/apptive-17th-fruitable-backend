@@ -18,7 +18,7 @@ public class Post {
 
     @Id @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long idx;
 
     //회원 정보 (Userid - 외래키(@Column), contact - 직접 받아옴)
     @Column
@@ -38,14 +38,14 @@ public class Post {
     private LocalDateTime endDate; //마감기한
 
     @Builder
-    public Post(Long id,
+    public Post(Long idx,
                 String userId,
                 String contact,
                 String title,
                 String content,
                 int price,
                 LocalDateTime endDate) {
-        this.id = id;
+        this.idx = idx;
         this.userId = userId;
         this.contact = contact;
         this.title = title;
