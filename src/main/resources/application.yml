@@ -4,6 +4,10 @@ spring:
     username: sa
     password:
     driver-class-name: org.h2.Driver
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 100MB
 
   jpa:
     hibernate:
@@ -16,3 +20,7 @@ logging:
   level:
     org.hibernate.sql: debug
 #   org.hibernate.type: trace
+
+img:
+  location: /Users/hjhwang/Projects/Spring/fruitable/img
+  uploadPath: file:///Users/hjhwang/Projects/Spring/fruitable/
