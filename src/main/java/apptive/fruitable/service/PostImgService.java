@@ -39,10 +39,11 @@ public class PostImgService {
 
     public void updatePostImg(Long postImgId, MultipartFile postImgFile) throws Exception {
         if(!postImgFile.isEmpty()) {
+            //id를 이용하여 기존에 저장했던 상품 이미지 엔티티 조회
             PostImg savedPostImg = postImgRepository.findById(postImgId)
                     .orElseThrow(EntityNotFoundException::new);
 
-            //기존 이미지 파일 삭제
+            //기존 등록된 이미지 파일이 있을 경우 삭제
             if(!StringUtils.isEmpty(savedPostImg.getImgName())) {
                 fileService.deleteImg(postImgLocation+"/"+savedPostImg.getImgName());
             }

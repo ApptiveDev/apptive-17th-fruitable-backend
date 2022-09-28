@@ -1,9 +1,7 @@
 package apptive.fruitable.controller;
 
-import apptive.fruitable.domain.post.Post;
 import apptive.fruitable.domain.post.PostDto;
 import apptive.fruitable.repository.PostRepository;
-import apptive.fruitable.service.PostService;
 import apptive.fruitable.service.PostServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +15,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -34,10 +29,13 @@ public class PostController {
     @Autowired
     private PostRepository postRepository;
 
+    /*
+     * 게시글 작성/등록
+     */
     @GetMapping(value = "/new")
     public String newPost(Model model) {
         model.addAttribute("postDto", new PostDto());
-        return "/post/list";
+        return "post/postForm";
     }
 
     @PostMapping(value = "/new")
@@ -45,22 +43,67 @@ public class PostController {
                           Model model, @RequestParam("postImgFile")List<MultipartFile> postImgFileList) {
 
         if(bindingResult.hasErrors()) {
-            return "/post/form";
+            return "post/postForm";
         }
 
         if(postImgFileList.get(0).isEmpty() && postDto.getId() == null) {
             model.addAttribute("errorMessage", "첫번째 이미지는 필수 입력 값입니다.");
-            return "/post/form";
+            return "/post/postForm";
         }
 
         try {
             postService.savedPost(postDto, postImgFileList);
         } catch (Exception e) {
             model.addAttribute("errorMessage", "상품 등록 중 에러가 발생하였습니다.");
-            return "/post/form";
+            return "/post/postForm";
         }
 
-        return "redirect:/";
+        //상품이 정상적으로 등록되면 리스트 페이지로 이동
+        return "/post/list";
+    }
+
+    /*
+     * 상품 수정 페이지로 진입
+     */
+    @GetMapping(value = "/{postId}")
+    public String postDetail(@PathVariable("postId") Long postId, Model model) {
+
+        try {
+            PostDto postDto = postService.getPostDetail(postId);
+            model.addAttribute("postDto", postDto);
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("errorMessage", "존재하지 않는 상품입니다.");
+            model.addAttribute("postDto", new PostDto());
+            return "post/postForm";
+        }
+
+        return "post/postForm";
+    }
+
+    /*
+     * 상품 수정 페이지
+     */
+    @PostMapping(value = "/{postId}")
+    public String postUpDate(@Valid PostDto postDto, BindingResult bindingResult,
+                             @RequestParam("postImgFile") List<MultipartFile> postImgFileList, Model model) {
+
+        if(bindingResult.hasErrors()) {
+            return "post/postForm";
+        }
+
+        if(postImgFileList.get(0).isEmpty() && postDto.getId() == null) {
+            model.addAttribute("errorMessage", "첫번째 상품 이미지는 필수 입력값입니다.");
+            return "post/postForm";
+        }
+
+        try {
+            postService.savedPost(postDto, postImgFileList);
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "상품 수정 중 에러가 발생하였습니다.");
+            return "post/postForm";
+        }
+
+        return "/post/list";
     }
 
     /*
@@ -70,24 +113,6 @@ public class PostController {
     public String list(@PageableDefault Pageable pageable, Model model) {
         model.addAttribute("postList", postService.findBoardList(pageable));
         return "/post/list";
-    }
-
-    @RequestMapping(value="/write", method=RequestMethod.POST)
-    public String write(
-            HttpServletRequest req, @RequestParam("file") MultipartFile file,
-            @RequestParam("vege")Integer vege,
-            @RequestParam("title")String title,
-            @RequestParam("userId")String userId,
-            @RequestParam("content")String content,
-            @RequestParam("contact")String contact,
-            @RequestParam("price")Integer price,
-            @RequestParam("endDate")LocalDateTime endDate) throws IllegalStateException, IOException {
-        String PATH = req.getSession().getServletContext().getRealPath("/") + "resources/";
-        if (!file.getOriginalFilename().isEmpty()) {
-            file.transferTo(new File(PATH + file.getOriginalFilename()));
-        }
-        //postService.(new Post(0, userId, title, contents, file.getOriginalFilename()));
-        return "board";
     }
 
     /*

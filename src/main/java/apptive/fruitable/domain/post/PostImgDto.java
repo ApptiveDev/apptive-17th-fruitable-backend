@@ -35,7 +35,7 @@ public class PostImgDto {
         return entity;
     }
 
-    public PostImgDto of(PostImg entity) {
+    public static PostImgDto of(PostImg entity) {
         PostImgDto dto = PostImgDto.builder()
                 .imgName(entity.getImgName())
                 .oriImgName(entity.getOriImgName())

@@ -63,7 +63,7 @@ public class PostDto {
         return entity;
     }
 
-    public PostDto of(Post entity) {
+    public static PostDto of(Post entity) {
         PostDto dto = PostDto.builder()
                 .userId(entity.getUserId())
                 .contact(entity.getContact())

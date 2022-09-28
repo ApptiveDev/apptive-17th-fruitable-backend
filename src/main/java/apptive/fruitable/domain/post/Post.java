@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @Getter @ToString
+@Table(name = "post")
 public class Post {
 
     @Id @Column(name = "post_id")
@@ -42,5 +43,15 @@ public class Post {
         this.content = content;
         this.price = price;
         this.endDate = endDate;
+    }
+
+    public void updatePost(PostDto postDto) {
+        this.userId = postDto.getUserId();
+        this.contact = postDto.getContact();
+        this.vege = postDto.getVege();
+        this.title = postDto.getTitle();
+        this.content =  postDto.getContent();
+        this.price = postDto.getPrice();
+        this.endDate = postDto.getEndDate();
     }
 }
