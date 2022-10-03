@@ -1,5 +1,6 @@
-package apptive.fruitable.domain.post;
+package apptive.fruitable.web.dto;
 
+import apptive.fruitable.domain.post.PostImg;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

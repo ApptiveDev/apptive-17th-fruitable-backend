@@ -1,11 +1,13 @@
 package apptive.fruitable.service;
 
 import apptive.fruitable.domain.post.Post;
-import apptive.fruitable.domain.post.PostDto;
+import apptive.fruitable.web.dto.MainPostDto;
+import apptive.fruitable.web.dto.PostDto;
 import apptive.fruitable.domain.post.PostImg;
-import apptive.fruitable.domain.post.PostImgDto;
+import apptive.fruitable.web.dto.PostImgDto;
 import apptive.fruitable.repository.PostImgRepository;
 import apptive.fruitable.repository.PostRepository;
+import apptive.fruitable.web.dto.PostSerachDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +20,6 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional

@@ -1,10 +1,10 @@
-package apptive.fruitable.domain.post;
+package apptive.fruitable.web.dto;
 
+import apptive.fruitable.domain.post.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.modelmapper.ModelMapper;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

@@ -1,5 +1,6 @@
 package apptive.fruitable.domain.post;
 
+import apptive.fruitable.web.dto.PostDto;
 import lombok.*;
 
 import javax.persistence.*;

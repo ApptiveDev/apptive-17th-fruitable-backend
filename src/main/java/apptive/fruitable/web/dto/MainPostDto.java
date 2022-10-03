@@ -1,4 +1,4 @@
-package apptive.fruitable.domain.post;
+package apptive.fruitable.web.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
