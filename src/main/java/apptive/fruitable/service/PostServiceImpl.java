@@ -7,7 +7,7 @@ import apptive.fruitable.domain.post.PostImg;
 import apptive.fruitable.web.dto.PostImgDto;
 import apptive.fruitable.repository.PostImgRepository;
 import apptive.fruitable.repository.PostRepository;
-import apptive.fruitable.web.dto.PostSerachDto;
+import apptive.fruitable.web.dto.PostSearchDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
