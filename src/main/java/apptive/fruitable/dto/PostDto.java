@@ -1,14 +1,11 @@
 package apptive.fruitable.dto;
 
-import apptive.fruitable.domain.post.File;
 import apptive.fruitable.domain.post.Post;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter @Setter
 @AllArgsConstructor
@@ -30,10 +27,8 @@ public class PostDto {
     private Integer price;
     private LocalDateTime endDate;
 
-    private Long fileId;
-
     @Builder
-    public PostDto(String userId, String contact, Integer vege, String title, String content, Integer price, LocalDateTime endDate, Long fileId) {
+    public PostDto(String userId, String contact, Integer vege, String title, String content, Integer price, LocalDateTime endDate) {
         this.userId = userId;
         this.contact = contact;
         this.vege = vege;
@@ -41,7 +36,6 @@ public class PostDto {
         this.content = content;
         this.price = price;
         this.endDate = endDate;
-        this.fileId = fileId;
     }
 
     public Post toEntity() {
@@ -53,7 +47,6 @@ public class PostDto {
                 .content(content)
                 .price(price)
                 .endDate(endDate)
-                .fileId(fileId)
                 .build();
 
         return entity;

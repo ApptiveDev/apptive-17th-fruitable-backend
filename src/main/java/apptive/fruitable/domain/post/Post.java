@@ -5,6 +5,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 //추후 @Table로 users 테이블과 매핑 필요
@@ -36,8 +38,12 @@ public class Post {
     private Integer price;
     private LocalDateTime endDate;
 
-    @Column
-    private Long fileId;
+    @OneToMany(
+            mappedBy = "post",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true
+    )
+    private List<Photo> photo = new ArrayList<>();
 
     @Builder
     public Post(String userId, String contact, Integer vege, String title, String content, Integer price, LocalDateTime endDate, Long fileId) {
@@ -48,7 +54,6 @@ public class Post {
         this.content = content;
         this.price = price;
         this.endDate = endDate;
-        this.fileId = fileId;
     }
 
     public void updatePost(PostDto postDto) {
@@ -59,5 +64,15 @@ public class Post {
         this.content =  postDto.getContent();
         this.price = postDto.getPrice();
         this.endDate = postDto.getEndDate();
+    }
+
+    //Post에서 파일 처리 위함
+    public void addPhoto(Photo photo) {
+        this.photo.add(photo);
+
+        //게시글에 파일이 저장되어 있지 않은 경우
+        if(photo.getPost() != this)
+            //파일 저장
+            photo.setPost(this);
     }
 }

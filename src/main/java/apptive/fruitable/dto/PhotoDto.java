@@ -1,34 +1,34 @@
 package apptive.fruitable.dto;
 
-import apptive.fruitable.domain.post.File;
+import apptive.fruitable.domain.post.Photo;
 import lombok.*;
 
 @Getter @Setter
 @ToString @NoArgsConstructor
-public class FileDto {
+public class PhotoDto {
 
     private Long id;
     private String origFilename;
     private String filename;
     private String filePath;
+    private Long fileSize;
 
-    public File toEntity() {
+    public Photo toEntity() {
 
-        File entity = File.builder()
-                .id(id)
+        Photo entity = Photo.builder()
                 .origFilename(origFilename)
-                .filename(filename)
                 .filePath(filePath)
+                .fileSize(fileSize)
                 .build();
 
         return entity;
     }
 
     @Builder
-    public FileDto(Long id, String origFilename, String filename, String filePath) {
+    public PhotoDto(Long id, String origFilename,String filePath, Long fileSize) {
         this.id = id;
         this.origFilename = origFilename;
-        this.filename = filename;
         this.filePath =filePath;
+        this.fileSize = fileSize;
     }
 }

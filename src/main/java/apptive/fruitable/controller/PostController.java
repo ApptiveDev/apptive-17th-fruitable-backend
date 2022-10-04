@@ -1,7 +1,10 @@
 package apptive.fruitable.controller;
 
+import apptive.fruitable.domain.post.PostFileVO;
+import apptive.fruitable.service.PhotoService;
 import apptive.fruitable.service.PostService;
 import apptive.fruitable.dto.PostDto;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +15,7 @@ import java.util.List;
 public class PostController {
 
     private PostService postService;
+    private PhotoService photoService;
 
     public PostController(PostService postService) {
         this.postService = postService;
@@ -40,13 +44,25 @@ public class PostController {
 
     /**
      * Post로 받은 데이터를 데이터베이스에 추가
-     * @param postDto
+     *
+     * @param postFileVO
      * @return 원래 화면
      */
     @PostMapping("/post")
-    public String write(PostDto postDto) {
-        postService.savePost(postDto);
-        return "redirect:/";
+    @ResponseStatus(HttpStatus.CREATED)
+    public Long write(PostFileVO postFileVO) throws Exception {
+
+        PostDto postDto = PostDto.builder()
+                .userId(postFileVO.getUserId())
+                .contact(postFileVO.getContact())
+                .vege(postFileVO.getVege())
+                .title(postFileVO.getTitle())
+                .content(postFileVO.getContent())
+                .price(postFileVO.getPrice())
+                .endDate(postFileVO.getEndDate())
+                .build();
+
+        return postService.savePost(postDto, postFileVO.getFiles());
     }
 
     /**
@@ -85,7 +101,7 @@ public class PostController {
     @PutMapping("/post/edit/{id}")
     public String update(PostDto postDto) {
 
-        postService.savePost(postDto);
+        //postService.savePost(postDto);
         return "redirect:/";
     }
 

@@ -1,18 +1,24 @@
 package apptive.fruitable.service;
 
+import apptive.fruitable.domain.post.Photo;
 import apptive.fruitable.domain.post.Post;
+import apptive.fruitable.repository.PhotoRepository;
 import apptive.fruitable.repository.PostRepository;
 import apptive.fruitable.dto.PostDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PostService {
 
     private PostRepository postRepository;
+    private PhotoRepository photoRepository;
+    private FileHandler fileHandler;
 
     public PostService(PostRepository postRepository) {
         this.postRepository = postRepository;
@@ -25,8 +31,20 @@ public class PostService {
      * @return
      */
     @Transactional
-    public Long savePost(PostDto postDto) {
-        return postRepository.save(postDto.toEntity()).getId();
+    public Long savePost(PostDto postDto, List<MultipartFile> files) throws Exception {
+
+        Post post = postDto.toEntity();
+        List<Photo> photoList = fileHandler.parseFileInfo(files);
+
+        //파일이 존재할 때만 처리
+        if(!photoList.isEmpty()) {
+            for(Photo photo : photoList) {
+                //파일을 DB에 저장
+                post.addPhoto(photoRepository.save(photo));
+            }
+        }
+
+        return postRepository.save(post).getId();
     }
 
     /*
@@ -72,7 +90,6 @@ public class PostService {
                 .content(post.getContent())
                 .price(post.getPrice())
                 .endDate(post.getEndDate())
-                .fileId(post.getFileId())
                 .build();
 
         return postDto;
