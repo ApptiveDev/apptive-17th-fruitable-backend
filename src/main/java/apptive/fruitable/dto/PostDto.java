@@ -1,5 +1,6 @@
 package apptive.fruitable.dto;
 
+import apptive.fruitable.domain.post.File;
 import apptive.fruitable.domain.post.Post;
 import lombok.*;
 
@@ -29,14 +30,10 @@ public class PostDto {
     private Integer price;
     private LocalDateTime endDate;
 
-    //수정할 때 글 이미지 아이디를 저장하는 리스트
-    private List<Long> postImgIdList = new ArrayList<>();
-
-    //수정할 때 글 안의 이미지 정보를 저장하는 리스트
-    private List<PostImgDto> postImgDtoList = new ArrayList<>();
+    private Long fileId;
 
     @Builder
-    public PostDto(String userId, String contact, Integer vege, String title, String content, Integer price, LocalDateTime endDate) {
+    public PostDto(String userId, String contact, Integer vege, String title, String content, Integer price, LocalDateTime endDate, Long fileId) {
         this.userId = userId;
         this.contact = contact;
         this.vege = vege;
@@ -44,6 +41,7 @@ public class PostDto {
         this.content = content;
         this.price = price;
         this.endDate = endDate;
+        this.fileId = fileId;
     }
 
     public Post toEntity() {
@@ -55,22 +53,9 @@ public class PostDto {
                 .content(content)
                 .price(price)
                 .endDate(endDate)
+                .fileId(fileId)
                 .build();
 
         return entity;
     }
-
-    /*public static PostDto of(Post entity) {
-        PostDto dto = PostDto.builder()
-                .userId(entity.getUserId())
-                .contact(entity.getContact())
-                .vege(entity.getVege())
-                .title(entity.getTitle())
-                .content(entity.getContent())
-                .price(entity.getPrice())
-                .endDate(entity.getEndDate())
-                .build();
-
-        return dto;
-    }*/
 }

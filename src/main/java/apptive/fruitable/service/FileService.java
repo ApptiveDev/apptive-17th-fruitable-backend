@@ -1,34 +1,39 @@
 package apptive.fruitable.service;
 
-import lombok.extern.java.Log;
+import apptive.fruitable.domain.post.File;
+import apptive.fruitable.dto.FileDto;
+import apptive.fruitable.repository.FileRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.UUID;
-
-@Service @Log
+@Service
 public class FileService {
 
-    public String uploadFile(String uploadPath, String oriImgName, byte[] imgData) throws Exception {
-        UUID uuid = UUID.randomUUID();
-        String extension = oriImgName.substring(oriImgName.lastIndexOf("."));
-        String savedImgName = uuid.toString() + extension;
-        String imgUploadUrl = uploadPath + "/" + savedImgName;
-        FileOutputStream fos = new FileOutputStream(imgUploadUrl);
-        fos.write(imgData);
-        fos.close();
+    private FileRepository fileRepository;
 
-        return savedImgName;
+    public FileService(FileRepository fileRepository) {
+
+        this.fileRepository = fileRepository;
     }
 
-    public void deleteImg(String imgPath) throws Exception {
-        File deleteImg = new File(imgPath);
-        if(deleteImg.exists()) {
-            deleteImg.delete();
-            log.info("파일을 삭제하였습니다.");
-        } else {
-            log.info("파일이 존재하지 않습니다.");
-        }
+    @Transactional
+    public Long saveFile(FileDto fileDto) {
+
+        return fileRepository.save(fileDto.toEntity()).getId();
+    }
+
+    @Transactional
+    public FileDto getFile(Long id) {
+
+        File file = fileRepository.findById(id).get();
+
+        FileDto fileDto = FileDto.builder()
+                .id(id)
+                .origFilename(file.getOrigFilename())
+                .filename(file.getFilename())
+                .filePath(file.getFilePath())
+                .build();
+
+        return fileDto;
     }
 }

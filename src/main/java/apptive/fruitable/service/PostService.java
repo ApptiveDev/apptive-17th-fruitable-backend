@@ -72,6 +72,7 @@ public class PostService {
                 .content(post.getContent())
                 .price(post.getPrice())
                 .endDate(post.getEndDate())
+                .fileId(post.getFileId())
                 .build();
 
         return postDto;

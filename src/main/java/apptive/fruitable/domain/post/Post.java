@@ -36,8 +36,11 @@ public class Post {
     private Integer price;
     private LocalDateTime endDate;
 
+    @Column
+    private Long fileId;
+
     @Builder
-    public Post(String userId, String contact, Integer vege, String title, String content, Integer price, LocalDateTime endDate) {
+    public Post(String userId, String contact, Integer vege, String title, String content, Integer price, LocalDateTime endDate, Long fileId) {
         this.userId = userId;
         this.contact = contact;
         this.vege = vege;
@@ -45,6 +48,7 @@ public class Post {
         this.content = content;
         this.price = price;
         this.endDate = endDate;
+        this.fileId = fileId;
     }
 
     public void updatePost(PostDto postDto) {
