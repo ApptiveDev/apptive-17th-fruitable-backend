@@ -1,6 +1,6 @@
 package apptive.fruitable.domain.post;
 
-import apptive.fruitable.web.dto.PostDto;
+import apptive.fruitable.dto.PostDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 //추후 @Table로 users 테이블과 매핑 필요
 @Entity
 @NoArgsConstructor
-@Getter @ToString
+@Getter
+@EntityListeners(AutoCloseable.class)
 @Table(name = "post")
 public class Post {
 

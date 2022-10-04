@@ -1,111 +1,98 @@
 package apptive.fruitable.controller;
 
-import apptive.fruitable.domain.post.Post;
-import apptive.fruitable.service.PostServiceImpl;
-import apptive.fruitable.web.dto.PostDto;
-import apptive.fruitable.web.dto.PostSearchDto;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import apptive.fruitable.service.PostService;
+import apptive.fruitable.dto.PostDto;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityNotFoundException;
-import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
-@RequiredArgsConstructor
 public class PostController {
 
-    private final PostServiceImpl postService;
+    private PostService postService;
 
-    @GetMapping(value = "/admin/post/new")
-    public String postForm(Model model) {
-        model.addAttribute("postDto", new PostDto());
-        return "post/postForm";
+    public PostController(PostService postService) {
+        this.postService = postService;
     }
 
-    @PostMapping(value = "/admin/post/new")
-    public String postNew(@Valid PostDto postDto, BindingResult bindingResult, Model model,
-                          @RequestParam("postImgFile")List<MultipartFile> postImgFileList) {
+    /**
+     * postDtoList를 "board/list"에 postList로 전달
+     * @param model
+     * @return
+     */
+    @GetMapping("/")
+    public String list(Model model) {
 
-        if(bindingResult.hasFieldErrors()) return "post/postForm";
-        if(postImgFileList.get(0).isEmpty() && postDto.getId() == null) {
-            model.addAttribute("errorMessage", "첫번째 상품 이미지는 필수 입력 값입니다.");
-            return "post/postForm";
-        }
+        List<PostDto> postDtoList = postService.getPostList();
+        model.addAttribute("postList", postDtoList);
+        return "board/list";
+    }
 
-        try {
-            postService.savedPost(postDto, postImgFileList);
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "상품 등록 중 에러가 발생하였습니다.");
-            return "post/postForm";
-        }
+    /*
+     * 글쓰는 페이지로 이동
+     */
+    @GetMapping("/post")
+    public String post() {
+        return "board/post";
+    }
 
+    /**
+     * Post로 받은 데이터를 데이터베이스에 추가
+     * @param postDto
+     * @return 원래 화면
+     */
+    @PostMapping("/post")
+    public String write(PostDto postDto) {
+        postService.savePost(postDto);
         return "redirect:/";
     }
 
-    @GetMapping(value = "/admin/post/{postId}")
-    public String postForm(@PathVariable("postId") Long postId, Model model) {
+    /**
+     * 각 게시글 클릭시 /post/1 과 같이 get 요청, 해당 아이디의 데이터가 view로 전달되도록 함
+     * @param id
+     * @param model
+     * @return
+     */
+    @GetMapping("/post/{id}")
+    public String detail(@PathVariable("id") Long id, Model model) {
 
-        try {
-            PostDto postDto = postService
-                    .getPostDetail(postId);
-            model.addAttribute("postDto", postDto);
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("errorMessage", "존재하지 않는 상품입니다.");
-            model.addAttribute("postDto", new PostDto());
-            return "post/postForm";
-        }
-
-        return "post/postForm";
-    }
-
-    @GetMapping(value = "/post/{postId}")
-    public String postDetail(@PathVariable("postId")Long postId, Model model) {
-
-        PostDto postDto = postService.getPostDetail(postId);
+        PostDto postDto = postService.getPost(id);
         model.addAttribute("post", postDto);
-
-        return "post/postDetail";
+        return "board/detail";
     }
 
-    @PostMapping(value = "/admin/post/{postId}")
-    public String postUpdate(@Valid PostDto postDto, BindingResult bindingResult, Model model,
-                             @RequestParam("postImgFile")List<MultipartFile> postImgFileList) {
+    /**
+     * id에 해당하는 게시글을 수정할 수 있음
+     * @param id
+     * @param model
+     * @return put 형식으로 /post/edit/{id}로 서버에 요청 감
+     */
+    @GetMapping("/post/edit/{id}")
+    public String edit(@PathVariable("id") Long id, Model model) {
 
-        if(bindingResult.hasErrors()) return "post/postForm";
-        if(postImgFileList.get(0).isEmpty() && postDto.getId() == null) {
-            model.addAttribute("errorMessage", "첫번재 상품 이미지는 필수 입력값 입니다.");
-            return "post/postForm";
-        }
+        PostDto postDto = postService.getPost(id);
+        model.addAttribute("post", postDto);
+        return "board/edit";
+    }
 
-        try {
-            postService.savedPost(postDto, postImgFileList);
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "상품 수정 중 에러가 발생하였습니다.");
-            return "post/postForm";
-        }
+    /**
+     * 서버에 put 요청이 오면, 데이터베이스에 변경된 데이터를 저장함
+     * @param postDto
+     * @return
+     */
+    @PutMapping("/post/edit/{id}")
+    public String update(PostDto postDto) {
 
+        postService.savePost(postDto);
         return "redirect:/";
     }
 
-   /* @GetMapping(value = {"/admin/posts", "/admin/posts/{page}"})
-    public String postManage(PostSearchDto postSearchDto, @PathVariable("page")Optional<Integer> page, Model model) {
+    @DeleteMapping("/post/{id}")
+    public String delete(@PathVariable("id") Long id) {
 
-        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 5);
-        Page<Post> posts = postService.getAdminPostPage(postSearchDto, pageable);
-
-        model.addAttribute("posts", posts);
-        model.addAttribute("postSearchDto", postSearchDto);
-        model.addAttribute("maxPage", 5);
-
-        return "post/postManage";
-    }*/
+        postService.deletePost(id);
+        return "redirect:/";
+    }
 }

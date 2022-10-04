@@ -1,10 +1,8 @@
 package apptive.fruitable.controller;
 
 import apptive.fruitable.domain.post.Post;
-import apptive.fruitable.web.dto.PostDto;
-import apptive.fruitable.repository.PostImgRepository;
+import apptive.fruitable.dto.PostDto;
 import apptive.fruitable.repository.PostRepository;
-import apptive.fruitable.service.PostServiceImpl;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;

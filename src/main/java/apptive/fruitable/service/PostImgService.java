@@ -1,7 +1,5 @@
 package apptive.fruitable.service;
 
-import apptive.fruitable.domain.post.PostImg;
-import apptive.fruitable.repository.PostImgRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

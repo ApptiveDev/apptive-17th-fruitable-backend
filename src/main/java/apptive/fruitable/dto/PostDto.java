@@ -1,10 +1,7 @@
-package apptive.fruitable.web.dto;
+package apptive.fruitable.dto;
 
 import apptive.fruitable.domain.post.Post;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -12,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostDto {
@@ -49,21 +46,21 @@ public class PostDto {
         this.endDate = endDate;
     }
 
-    public Post toEntity(PostDto dto) {
+    public Post toEntity() {
         Post entity = Post.builder()
-                .userId(dto.userId)
-                .contact(dto.contact)
-                .vege(dto.vege)
-                .title(dto.title)
-                .content(dto.content)
-                .price(dto.price)
-                .endDate(dto.endDate)
+                .userId(userId)
+                .contact(contact)
+                .vege(vege)
+                .title(title)
+                .content(content)
+                .price(price)
+                .endDate(endDate)
                 .build();
 
         return entity;
     }
 
-    public static PostDto of(Post entity) {
+    /*public static PostDto of(Post entity) {
         PostDto dto = PostDto.builder()
                 .userId(entity.getUserId())
                 .contact(entity.getContact())
@@ -75,5 +72,5 @@ public class PostDto {
                 .build();
 
         return dto;
-    }
+    }*/
 }
