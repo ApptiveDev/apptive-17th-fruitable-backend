@@ -1,6 +1,7 @@
 package apptive.fruitable.service;
 
 import apptive.fruitable.domain.post.Photo;
+import apptive.fruitable.domain.post.Post;
 import apptive.fruitable.dto.PhotoDto;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -20,6 +21,7 @@ public class FileHandler {
     }
 
     public List<Photo> parseFileInfo(
+            Post post, //Post에 존재하는 파일이지 확인하기 위함
             List<MultipartFile> multipartFiles
     ) throws Exception {
 
@@ -83,6 +85,10 @@ public class FileHandler {
                         photoDto.getFilePath(),
                         photoDto.getFileSize()
                 );
+
+                if(post.getId() != null) {
+                    photo.setPost(post);
+                }
 
                 //생성 후 리스트에 추가
                 fileList.add(photo);

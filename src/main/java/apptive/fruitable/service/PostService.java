@@ -5,15 +5,16 @@ import apptive.fruitable.domain.post.Post;
 import apptive.fruitable.repository.PhotoRepository;
 import apptive.fruitable.repository.PostRepository;
 import apptive.fruitable.dto.PostDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PostService {
 
     private PostRepository postRepository;
@@ -34,7 +35,7 @@ public class PostService {
     public Long savePost(PostDto postDto, List<MultipartFile> files) throws Exception {
 
         Post post = postDto.toEntity();
-        List<Photo> photoList = fileHandler.parseFileInfo(files);
+        List<Photo> photoList = fileHandler.parseFileInfo(post, files);
 
         //파일이 존재할 때만 처리
         if(!photoList.isEmpty()) {
@@ -99,5 +100,27 @@ public class PostService {
     public void deletePost(Long id) {
 
         postRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Long update(
+            Long id,
+            PostDto postDto,
+            List<MultipartFile> files
+    ) throws Exception {
+
+        Post post = postRepository.findById(id).orElseThrow(()
+        -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+
+        List<Photo> photoList = fileHandler.parseFileInfo(post, files);
+
+        if(!photoList.isEmpty()) {
+            for(Photo photo : photoList) {
+                photoRepository.save(photo);
+            }
+        }
+
+        post.updatePost(postDto);
+        return id;
     }
 }
