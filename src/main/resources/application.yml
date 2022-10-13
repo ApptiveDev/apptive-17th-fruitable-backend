@@ -21,3 +21,7 @@ logging:
   level:
     org.hibernate.sql: debug
 #   org.hibernate.type: trace
+
+img:
+  location: /Users/hjhwang/Projects/Spring/fruitable/img #상품 이미지 업로드 경로
+  uploadPath: file:///Users/hjhwang/Projects/Spring/ #리소스 업로드 경로

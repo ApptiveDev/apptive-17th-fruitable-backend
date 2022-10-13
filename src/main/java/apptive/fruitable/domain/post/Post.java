@@ -45,7 +45,7 @@ public class Post {
     )
     private List<Photo> photo = new ArrayList<>();
 
-    @Builder
+    /*@Builder
     public Post(String userId, String contact, Integer vege, String title, String content, Integer price, LocalDateTime endDate, Long fileId) {
         this.userId = userId;
         this.contact = contact;
@@ -54,7 +54,7 @@ public class Post {
         this.content = content;
         this.price = price;
         this.endDate = endDate;
-    }
+    }*/
 
     public void updatePost(PostDto postDto) {
         this.userId = postDto.getUserId();

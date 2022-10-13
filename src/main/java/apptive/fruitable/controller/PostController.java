@@ -6,67 +6,77 @@ import apptive.fruitable.dto.PhotoResponseDto;
 import apptive.fruitable.service.PhotoService;
 import apptive.fruitable.service.PostService;
 import apptive.fruitable.dto.PostDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.thymeleaf.model.IModel;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController
+@Controller
+@RequiredArgsConstructor
 public class PostController {
 
-    private PostService postService;
-    private PhotoService photoService;
-
-    public PostController(PostService postService) {
-        this.postService = postService;
-    }
+    private final PostService postService;
+    private final PhotoService photoService;
 
     /**
      * postDtoList를 "board/list"에 postList로 전달
      * @param model
      * @return
      */
-    @GetMapping("/")
+    /*@GetMapping("/")
     public String list(Model model) {
 
         List<PostDto> postDtoList = postService.getPostList();
         model.addAttribute("postList", postDtoList);
         return "board/list";
-    }
+    }*/
 
     /*
      * 글쓰는 페이지로 이동
      */
     @GetMapping("/post")
-    public String post() {
+    public String post(Model model) {
+
+        model.addAttribute("postDto", new PostDto());
         return "board/post";
     }
 
     /**
      * Post로 받은 데이터를 데이터베이스에 추가
-     *
-     * @param postFileVO
      * @return 원래 화면
      */
     @PostMapping("/post")
     @ResponseStatus(HttpStatus.CREATED)
-    public Long write(PostFileVO postFileVO) throws Exception {
+    public String write(@Valid PostDto postDto, BindingResult bindingResult,
+                      Model model, @RequestParam("photoFile") List<MultipartFile> photoFileList) throws Exception {
 
-        PostDto postDto = PostDto.builder()
-                .userId(postFileVO.getUserId())
-                .contact(postFileVO.getContact())
-                .vege(postFileVO.getVege())
-                .title(postFileVO.getTitle())
-                .content(postFileVO.getContent())
-                .price(postFileVO.getPrice())
-                .endDate(postFileVO.getEndDate())
-                .build();
+        if(bindingResult.hasErrors()) {
+            return "board/post";
+        }
 
-        return postService.savePost(postDto, postFileVO.getFiles());
+        if(photoFileList.get(0).isEmpty() && postDto.getId() == null) {
+            model.addAttribute("errorMessage", "첫번째 상품 이미지는 필수 입력 값 입니다.");
+            return "board/post";
+        }
+
+        try {
+            postService.savePost(postDto, photoFileList);
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "상품 등록 중 에러가 발생하였습니다.");
+            return "board/post";
+        }
+
+        return "redirect:/";
     }
 
     /**
@@ -75,13 +85,13 @@ public class PostController {
      * @param model
      * @return
      */
-    @GetMapping("/post/{id}")
+    /*@GetMapping("/post/{id}")
     public String detail(@PathVariable("id") Long id, Model model) {
 
         PostDto postDto = postService.getPost(id);
         model.addAttribute("post", postDto);
         return "board/detail";
-    }
+    }*/
 
     /**
      * id에 해당하는 게시글을 수정할 수 있음
@@ -89,20 +99,20 @@ public class PostController {
      * @param model
      * @return put 형식으로 /post/edit/{id}로 서버에 요청 감
      */
-    @GetMapping("/post/edit/{id}")
+    /*@GetMapping("/post/edit/{id}")
     public String edit(@PathVariable("id") Long id, Model model) {
 
         PostDto postDto = postService.getPost(id);
         model.addAttribute("post", postDto);
         return "board/edit";
-    }
+    }*/
 
     /**
      * 서버에 put 요청이 오면, 데이터베이스에 변경된 데이터를 저장함
      * @param id, postFileVO
      * @return
      */
-    @PutMapping("/post/edit/{id}")
+    /*@PutMapping("/post/edit/{id}")
     @CrossOrigin
     public String update(@PathVariable Long id, PostFileVO postFileVO) throws Exception {
 
@@ -160,7 +170,7 @@ public class PostController {
             }
         }
 
-        postService.update(id, postDto, addFileList);
+        //postService.update(id, postDto, addFileList);
 
         return "redirect:/";
     }
@@ -170,5 +180,5 @@ public class PostController {
 
         postService.deletePost(id);
         return "redirect:/";
-    }
+    }*/
 }

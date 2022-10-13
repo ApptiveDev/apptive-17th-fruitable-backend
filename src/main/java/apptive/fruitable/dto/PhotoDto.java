@@ -2,33 +2,20 @@ package apptive.fruitable.dto;
 
 import apptive.fruitable.domain.post.Photo;
 import lombok.*;
+import org.modelmapper.ModelMapper;
 
 @Getter @Setter
-@ToString @NoArgsConstructor
 public class PhotoDto {
 
     private Long id;
     private String origFilename;
     private String filename;
     private String filePath;
-    private Long fileSize;
+    private String repImg;
 
-    public Photo toEntity() {
+    private static ModelMapper modelMapper = new ModelMapper();
 
-        Photo entity = Photo.builder()
-                .origFilename(origFilename)
-                .filePath(filePath)
-                .fileSize(fileSize)
-                .build();
-
-        return entity;
-    }
-
-    @Builder
-    public PhotoDto(Long id, String origFilename,String filePath, Long fileSize) {
-        this.id = id;
-        this.origFilename = origFilename;
-        this.filePath =filePath;
-        this.fileSize = fileSize;
+    public static PhotoDto of(Photo photo) {
+        return modelMapper.map(photo, PhotoDto.class);
     }
 }
