@@ -2,20 +2,22 @@ package apptive.fruitable.service;
 
 import apptive.fruitable.domain.post.Photo;
 import apptive.fruitable.domain.post.Post;
+import apptive.fruitable.dto.PhotoDto;
+import apptive.fruitable.dto.PostDto;
 import apptive.fruitable.repository.PhotoRepository;
 import apptive.fruitable.repository.PostRepository;
-import apptive.fruitable.dto.PostDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
+import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class PostService {
 
@@ -27,6 +29,7 @@ public class PostService {
      * 글쓰기 Form에서 내용을 입력한 뒤, '글쓰기' 버튼을 누르면 Post 형식으로 요청이 오고,
      * PostService의 savePost()를 실행하게 된다.
      */
+    @Transactional
     public Long savePost(PostDto postDto, List<MultipartFile> files) throws Exception {
 
         //System.out.println(postDto.getTitle());
@@ -80,47 +83,50 @@ public class PostService {
      * @param id
      * @return 해당 게시글의 데이터만 가져와 화면에 뿌려줌
      */
-    /*public PostDto getPost(Long id) {
+    @Transactional(readOnly = true)
+    public PostDto getPost(Long id) {
 
-        Post post = postRepository.findById(id).get();
+        List<Photo> photoList = photoRepository.findAllById(Collections.singleton(id));
+        List<PhotoDto> photoDtoList = new ArrayList<>();
 
-        PostDto postDto = PostDto.builder()
-                .userId(post.getUserId())
-                .contact(post.getContact())
-                .vege(post.getVege())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .price(post.getPrice())
-                .endDate(post.getEndDate())
-                .build();
+        for(Photo photo : photoList) {
+            PhotoDto photoDto = PhotoDto.of(photo);
+            photoDtoList.add(photoDto);
+        }
+
+        Post post = postRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
+        PostDto postDto = PostDto.of(post);
+        postDto.setPhotoDtoList(photoDtoList);
 
         return postDto;
-    }*/
-
-    public void deletePost(Long id) {
-
-        postRepository.deleteById(id);
     }
 
-    /*@Transactional
+    @Transactional
+    public void deletePost(Long id) {
+
+        Post post = postRepository.findById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("해당 리뷰가 존재하지 않습니다."));
+        postRepository.delete(post);
+    }
+
+    @Transactional
     public Long update(
             Long id,
             PostDto postDto,
             List<MultipartFile> files
     ) throws Exception {
 
-        Post post = postRepository.findById(id).orElseThrow(()
-        -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+        //상품 수정
+        Post post = postRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
+        post.updatePost(postDto);
 
-        List<Photo> photoList = fileHandler.parseFileInfo(post, files);
-
-        if(!photoList.isEmpty()) {
-            for(Photo photo : photoList) {
-                photoRepository.save(photo);
-            }
+        //이미지 등록
+        for(int i=0; i<files.size(); i++) {
+            photoService.updatePhoto(id, files.get(i));
         }
 
-        post.updatePost(postDto);
-        return id;
-    }*/
+        return post.getId();
+    }
 }

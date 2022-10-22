@@ -7,7 +7,6 @@ import apptive.fruitable.dto.PhotoResponseDto;
 import apptive.fruitable.repository.PhotoRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -65,9 +64,9 @@ public class PhotoService {
     /**
      * 이미지 삭제
      */
-    public void deletePhoto(Long id) {
+    public void deletePhoto(String filepath) {
 
-        photoRepository.deleteById(id);
+        //photoRepository.deleteById(id);
     }
 
     /**

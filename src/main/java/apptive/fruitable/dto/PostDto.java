@@ -1,11 +1,14 @@
 package apptive.fruitable.dto;
 
 import apptive.fruitable.domain.post.Post;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -16,6 +19,8 @@ import java.util.List;
 @Component
 public class PostDto {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String userId;
 
@@ -32,10 +37,6 @@ public class PostDto {
     private LocalDateTime endDate;
 
     private List<PhotoDto> photoDtoList = new ArrayList<>();
-
-    private List<Long> photoIds = new ArrayList<>();
-
-
 
     private static ModelMapper modelMapper = new ModelMapper();
 

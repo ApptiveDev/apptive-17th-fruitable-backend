@@ -18,7 +18,7 @@ import java.util.List;
 public class Post {
 
     @Id @Column(name = "post_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     //회원 정보 (Userid - 외래키(@Column), contact - 직접 받아옴)
