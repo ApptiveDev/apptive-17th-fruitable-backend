@@ -1,8 +1,7 @@
 package apptive.fruitable.board.dto.post;
 
 import apptive.fruitable.board.domain.post.Post;
-import apptive.fruitable.board.domain.tag.Tag;
-import apptive.fruitable.login.entity.MemberEntity;
+import apptive.fruitable.login.entity.Member;
 import lombok.Getter;
 import lombok.Setter;
 import org.modelmapper.ModelMapper;
@@ -20,8 +19,7 @@ public class PostDto {
 
     private Long id;
 
-    private MemberEntity userId;
-    private List<String> tagList;
+    private Member userId;
 
     @NotBlank(message = "연락처를 입력해 주세요")
     private String contact;

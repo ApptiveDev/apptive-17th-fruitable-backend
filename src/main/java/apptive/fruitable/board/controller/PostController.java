@@ -6,7 +6,6 @@ import apptive.fruitable.board.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -53,11 +52,10 @@ public class PostController {
                     MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public Long write(@Valid @RequestPart(value = "requestDto") PostRequestDto requestDto,
-                      @RequestPart(value = "images") List<MultipartFile> photoFileList,
-                      @RequestPart(value = "tags") List<String> contentList
+                      @RequestPart(value = "images") List<MultipartFile> photoFileList
                       ) throws Exception {
 
-        return postService.savePost(requestDto, photoFileList, contentList);
+        return postService.savePost(requestDto, photoFileList);
     }
 
     /**
@@ -94,7 +92,7 @@ public class PostController {
         }
 
         try {
-            postService.update(postId, requestDto, photoFileList, contentList);
+            postService.update(postId, requestDto, photoFileList);
             return new ResponseEntity<>("업데이트에 성공했습니다.", HttpStatus.OK);
         } catch (IOException e) {
             return new ResponseEntity<>("게시글 업데이트에 실패했습니다.", HttpStatus.BAD_REQUEST);

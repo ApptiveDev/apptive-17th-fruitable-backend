@@ -1,6 +1,6 @@
 package apptive.fruitable.board.dto.post;
 
-import apptive.fruitable.login.entity.MemberEntity;
+import apptive.fruitable.login.entity.Member;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,7 +16,7 @@ import java.util.List;
 @Component
 public class PostRequestDto {
 
-    private MemberEntity userId;
+    private Member userId;
 
     @NotBlank(message = "연락처를 입력해 주세요")
     private String contact;

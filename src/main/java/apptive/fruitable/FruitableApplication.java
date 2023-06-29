@@ -12,7 +12,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 @EnableJpaAuditing
 public class FruitableApplication {
 
-    static {
+   static {
         System.setProperty("com.amazone.sdk.disableEc2Metadata", "true");
     }
 
