@@ -28,11 +28,12 @@ public class CommentController {
         return new ResponseEntity<>(commentId, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{postId}/update")
+    @PutMapping("/{postId}/{commentId}")
     public ResponseEntity<String> updateComment(@PathVariable Long postId,
+                                                 @PathVariable Long commentId,
                                                  @RequestPart(name = "comment") CommentDto.CommentUpdateRequestDto commentDto) {
 
-        String content = commentService.update(commentDto);
+        String content = commentService.update(commentId, commentDto);
         return new ResponseEntity<>(content, HttpStatus.OK);
     }
 

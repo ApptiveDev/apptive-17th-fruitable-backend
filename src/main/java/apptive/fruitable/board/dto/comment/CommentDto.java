@@ -18,7 +18,6 @@ public class CommentDto {
 
     @Getter @Setter
     public static class CommentUpdateRequestDto {
-        private Long commentId; // 댓글 id
         private String commentContent; // 댓글 내용
     }
 

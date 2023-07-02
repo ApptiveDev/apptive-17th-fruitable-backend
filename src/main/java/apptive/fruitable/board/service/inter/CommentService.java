@@ -9,5 +9,5 @@ public interface CommentService {
     public List<CommentDto.CommentResponseDto> commentsList(Long postId);
     public Long saveComment(Long postId, CommentDto.CommentRequestDto requestDto);
     public void deleteComment(Long commentId);
-    public String update(CommentDto.CommentUpdateRequestDto commentDto);
+    public String update(Long commentId, CommentDto.CommentUpdateRequestDto commentDto);
 }

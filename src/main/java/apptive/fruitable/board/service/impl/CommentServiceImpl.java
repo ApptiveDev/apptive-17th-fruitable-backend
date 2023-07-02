@@ -49,12 +49,21 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public void deleteComment(Long commentId) {
 
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
+        commentRepository.deleteById(commentId);
     }
 
     @Override
-    public String update(CommentDto.CommentUpdateRequestDto commentDto) {
-        return null;
+    @Transactional
+    public String update(Long commentId, CommentDto.CommentUpdateRequestDto commentDto) {
+
+        Comment comment = commentRepository.findById(commentId).get();
+        comment.setCommentContent(commentDto.getCommentContent());
+
+        return comment.getCommentContent();
     }
 }
