@@ -1,9 +1,8 @@
 package apptive.fruitable.board.controller;
 
-import apptive.fruitable.board.dto.post.PostDto;
+import apptive.fruitable.board.dto.post.PostResponseDto;
 import apptive.fruitable.board.dto.post.PostRequestDto;
 import apptive.fruitable.board.service.inter.PostService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
-@Tag(name = "post controller")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/posts")
@@ -29,7 +27,7 @@ public class PostController {
      * postDtoList를 "board/list"에 postList로 전달
      */
     @GetMapping("")
-    public List<PostDto> list() {
+    public List<PostResponseDto.GetDto> list() {
 
         return postService.getPostList();
     }
@@ -52,7 +50,7 @@ public class PostController {
      * @return postId 에 해당하는 postDto 객체 전체
      */
     @GetMapping("/{postId}")
-    public PostDto detail(@PathVariable Long postId) {
+    public PostResponseDto.GetWithCommentDto detail(@PathVariable Long postId) {
 
         return postService.getPost(postId);
     }

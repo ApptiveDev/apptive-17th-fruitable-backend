@@ -1,10 +1,13 @@
 package apptive.fruitable.board.service.inter;
 
-import apptive.fruitable.board.dto.comment.CommentRequestDto;
+import apptive.fruitable.board.dto.comment.CommentDto;
+
+import java.util.List;
 
 public interface CommentService {
 
-    public Long saveComment(CommentRequestDto requestDto);
+    public List<CommentDto.CommentResponseDto> commentsList(Long postId);
+    public Long saveComment(Long postId, CommentDto.CommentRequestDto requestDto);
     public void deleteComment(Long commentId);
-    public Long update(Long commentId, CommentRequestDto commentRequestDto);
+    public String update(CommentDto.CommentUpdateRequestDto commentDto);
 }

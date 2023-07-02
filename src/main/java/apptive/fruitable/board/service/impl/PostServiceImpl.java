@@ -1,12 +1,15 @@
 package apptive.fruitable.board.service.impl;
 
 import apptive.fruitable.board.domain.post.Post;
-import apptive.fruitable.board.dto.post.PostDto;
+import apptive.fruitable.board.dto.comment.CommentDto;
+import apptive.fruitable.board.dto.post.PostResponseDto;
 import apptive.fruitable.board.dto.post.PostRequestDto;
 import apptive.fruitable.board.repository.PostRepository;
+import apptive.fruitable.board.service.inter.CommentService;
 import apptive.fruitable.board.service.inter.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +23,8 @@ import java.util.List;
 @Slf4j
 public class PostServiceImpl implements PostService {
 
+    @Autowired
+    private CommentService commentService;
     private final PostRepository postRepository;
 
     /**
@@ -40,32 +45,37 @@ public class PostServiceImpl implements PostService {
     /**
      * 게시글 목록 가져오기
      */
-    public List<PostDto> getPostList() {
+    public List<PostResponseDto.GetDto> getPostList() {
         List<Post> postList = postRepository.findAll();
-        List<PostDto> postDtoList = new ArrayList<>();
+        List<PostResponseDto.GetDto> postResponseDtoList = new ArrayList<>();
 
         for (Post post : postList) {
 
-            PostDto postDto = PostDto.of(post);
+            PostResponseDto.GetDto postResponseDto = PostResponseDto.GetDto.of(post);
 
-            postDtoList.add(postDto);
+            postResponseDtoList.add(postResponseDto);
         }
-        return postDtoList;
+        return postResponseDtoList;
     }
 
     /**
      * 게시글 클릭시 상세게시글의 내용 확인
-     * @param id
+     * @param postId
      * @return 해당 게시글의 데이터만 가져와 화면에 뿌려줌
      */
     @Transactional(readOnly = true)
-    public PostDto getPost(Long id) {
+    public PostResponseDto.GetWithCommentDto getPost(Long postId) {
 
-        Post post = postRepository.findById(id)
+        // 게시글 가져오기
+        Post post = postRepository.findById(postId)
                 .orElseThrow(EntityNotFoundException::new);
-        PostDto postDto = PostDto.of(post);
+        PostResponseDto.GetWithCommentDto postResponseDto = PostResponseDto.GetWithCommentDto.of(post);
 
-        return postDto;
+        // 댓글 가져오기
+        List<CommentDto.CommentResponseDto> comments = commentService.commentsList(postId);
+        postResponseDto.setComments(comments);
+
+        return postResponseDto;
     }
 
     @Transactional

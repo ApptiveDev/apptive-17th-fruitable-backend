@@ -2,7 +2,6 @@ package apptive.fruitable.board.domain.post;
 
 import apptive.fruitable.base.domain.BaseEntity;
 import apptive.fruitable.board.dto.post.PostRequestDto;
-import apptive.fruitable.converter.StringListConverter;
 import apptive.fruitable.login.entity.Member;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -11,7 +10,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -42,7 +40,6 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private Integer price;
     private LocalDate endDate;
-
 
     public void updatePost(PostRequestDto postDto) {
         this.userId = postDto.getUserId();
