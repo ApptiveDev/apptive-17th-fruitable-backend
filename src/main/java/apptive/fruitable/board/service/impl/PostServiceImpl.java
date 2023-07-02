@@ -1,16 +1,17 @@
-package apptive.fruitable.board.service;
+package apptive.fruitable.board.service.impl;
 
 import apptive.fruitable.board.domain.post.Post;
-import apptive.fruitable.board.domain.tag.Tag;
-import apptive.fruitable.board.dto.post.PostDto;
+import apptive.fruitable.board.dto.comment.CommentDto;
+import apptive.fruitable.board.dto.post.PostResponseDto;
 import apptive.fruitable.board.dto.post.PostRequestDto;
-import apptive.fruitable.board.handler.S3Uploader;
 import apptive.fruitable.board.repository.PostRepository;
+import apptive.fruitable.board.service.inter.CommentService;
+import apptive.fruitable.board.service.inter.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
@@ -20,26 +21,21 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class PostService {
+public class PostServiceImpl implements PostService {
 
+    @Autowired
+    private CommentService commentService;
     private final PostRepository postRepository;
-    private final TagService tagService;
-    private final S3Uploader s3Uploader;
 
     /**
      * 글쓰기 Form에서 내용을 입력한 뒤, '글쓰기' 버튼을 누르면 Post 형식으로 요청이 오고,
      * PostService의 savePost()를 실행하게 된다.
      */
     @Transactional
-    public Long savePost(PostRequestDto requestDto,
-                         List<MultipartFile> files,
-                         List<String> contentList) throws Exception {
+    public Long savePost(PostRequestDto requestDto) throws Exception {
 
         Post post = new Post();
         post.updatePost(requestDto);
-
-        //태그 및 이미지 등록
-        saveUpdate(files, contentList, post);
 
         postRepository.save(post);
 
@@ -49,32 +45,37 @@ public class PostService {
     /**
      * 게시글 목록 가져오기
      */
-    public List<PostDto> getPostList() {
+    public List<PostResponseDto.GetDto> getPostList() {
         List<Post> postList = postRepository.findAll();
-        List<PostDto> postDtoList = new ArrayList<>();
+        List<PostResponseDto.GetDto> postResponseDtoList = new ArrayList<>();
 
         for (Post post : postList) {
 
-            PostDto postDto = PostDto.of(post);
+            PostResponseDto.GetDto postResponseDto = PostResponseDto.GetDto.of(post);
 
-            postDtoList.add(postDto);
+            postResponseDtoList.add(postResponseDto);
         }
-        return postDtoList;
+        return postResponseDtoList;
     }
 
     /**
      * 게시글 클릭시 상세게시글의 내용 확인
-     * @param id
+     * @param postId
      * @return 해당 게시글의 데이터만 가져와 화면에 뿌려줌
      */
     @Transactional(readOnly = true)
-    public PostDto getPost(Long id) {
+    public PostResponseDto.GetWithCommentDto getPost(Long postId) {
 
-        Post post = postRepository.findById(id)
+        // 게시글 가져오기
+        Post post = postRepository.findById(postId)
                 .orElseThrow(EntityNotFoundException::new);
-        PostDto postDto = PostDto.of(post);
+        PostResponseDto.GetWithCommentDto postResponseDto = PostResponseDto.GetWithCommentDto.of(post);
 
-        return postDto;
+        // 댓글 가져오기
+        List<CommentDto.CommentResponseDto> comments = commentService.commentsList(postId);
+        postResponseDto.setComments(comments);
+
+        return postResponseDto;
     }
 
     @Transactional
@@ -82,46 +83,23 @@ public class PostService {
 
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
-
-        tagService.deleteTag(post);
         postRepository.deleteById(id);
     }
 
     @Transactional
     public Long update(
             Long id,
-            PostRequestDto requestDto,
-            List<MultipartFile> files,
-            List<String> contentList
+            PostRequestDto requestDto
     ) throws IOException {
 
         //상품 수정
         Post post = postRepository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
 
-        //태그 업데이트 및 사진 업데이트
-        tagService.deleteTag(post);
-        saveUpdate(files, contentList, post);
-
         post.updatePost(requestDto);
 
         postRepository.save(post);
 
         return post.getId();
-    }
-
-    private void saveUpdate(List<MultipartFile> files, List<String> contentList, Post post) {
-        List<String> tagList = tagService.saveTag(post, contentList);
-        post.setTagList(tagList);
-
-        List<String> filePath = s3Uploader.uploadFiles(files);
-
-        List<String> fileURL = new ArrayList<>();
-        for (String url : filePath) {
-            fileURL.add(s3Uploader.getFile(url));
-        }
-
-        post.setFilePath(filePath);
-        post.setFileURL(fileURL);
     }
 }

@@ -1,9 +1,8 @@
 package apptive.fruitable.board.domain.post;
 
-import apptive.fruitable.board.domain.tag.Tag;
+import apptive.fruitable.base.domain.BaseEntity;
 import apptive.fruitable.board.dto.post.PostRequestDto;
-import apptive.fruitable.converter.StringListConverter;
-import apptive.fruitable.login.entity.MemberEntity;
+import apptive.fruitable.login.entity.Member;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,14 +10,13 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor
 @Getter @Setter
 @EntityListeners(AutoCloseable.class)
 @Table(name = "post")
-public class Post {
+public class Post extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
@@ -26,11 +24,8 @@ public class Post {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
-    //@JoinColumn(name = "member_id")
-    private MemberEntity userId;
-
-    @Convert(converter = StringListConverter.class)
-    private List<String> tagList;
+    //@JoinColumn(name = "member")
+    private Member userId;
 
     @Column(nullable = false, length = 5000)
     private String contact;
@@ -46,17 +41,6 @@ public class Post {
     private Integer price;
     private LocalDate endDate;
 
-    @Column
-    @Convert(converter = StringListConverter.class)
-    private List<String> filePath;
-
-    @Column
-    @Convert(converter = StringListConverter.class)
-    private List<String> fileURL;
-    @Column
-    @Convert(converter = StringListConverter.class)
-    private List<String> localFilePath;
-
     public void updatePost(PostRequestDto postDto) {
         this.userId = postDto.getUserId();
         this.contact = postDto.getContact();
@@ -65,6 +49,5 @@ public class Post {
         this.content =  postDto.getContent();
         this.price = postDto.getPrice();
         this.endDate = postDto.getEndDate();
-        this.localFilePath = postDto.getLocalFilePath();
     }
 }
