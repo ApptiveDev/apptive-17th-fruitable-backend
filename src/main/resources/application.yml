@@ -30,20 +30,6 @@ logging:
     org.hibernate.sql: debug
 #   org.hibernate.type: trace
 
-cloud:
-  aws:
-    s3:
-      bucket: fruitable-bucket
-    credentials:
-      access-key:
-      secret-key:
-    region:
-      static: ap-northeast-2
-      auto: false
-    stack:
-      auto: false
-
-
 #springdoc swagger
 springdoc:
   api-docs:

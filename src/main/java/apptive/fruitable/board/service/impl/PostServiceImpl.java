@@ -1,15 +1,14 @@
-package apptive.fruitable.board.service;
+package apptive.fruitable.board.service.impl;
 
 import apptive.fruitable.board.domain.post.Post;
 import apptive.fruitable.board.dto.post.PostDto;
 import apptive.fruitable.board.dto.post.PostRequestDto;
-import apptive.fruitable.board.handler.S3Uploader;
 import apptive.fruitable.board.repository.PostRepository;
+import apptive.fruitable.board.service.inter.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
@@ -19,24 +18,19 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class PostService {
+public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
-    private final S3Uploader s3Uploader;
 
     /**
      * 글쓰기 Form에서 내용을 입력한 뒤, '글쓰기' 버튼을 누르면 Post 형식으로 요청이 오고,
      * PostService의 savePost()를 실행하게 된다.
      */
     @Transactional
-    public Long savePost(PostRequestDto requestDto,
-                         List<MultipartFile> files) throws Exception {
+    public Long savePost(PostRequestDto requestDto) throws Exception {
 
         Post post = new Post();
         post.updatePost(requestDto);
-
-        //이미지 등록
-        saveUpdate(files, post);
 
         postRepository.save(post);
 
@@ -85,34 +79,17 @@ public class PostService {
     @Transactional
     public Long update(
             Long id,
-            PostRequestDto requestDto,
-            List<MultipartFile> files
+            PostRequestDto requestDto
     ) throws IOException {
 
         //상품 수정
         Post post = postRepository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
 
-        //사진 업데이트
-        saveUpdate(files, post);
-
         post.updatePost(requestDto);
 
         postRepository.save(post);
 
         return post.getId();
-    }
-
-    private void saveUpdate(List<MultipartFile> files, Post post) {
-
-        List<String> filePath = s3Uploader.uploadFiles(files);
-
-        List<String> fileURL = new ArrayList<>();
-        for (String url : filePath) {
-            fileURL.add(s3Uploader.getFile(url));
-        }
-
-        post.setFilePath(filePath);
-        post.setFileURL(fileURL);
     }
 }

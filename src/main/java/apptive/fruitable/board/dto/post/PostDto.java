@@ -33,14 +33,7 @@ public class PostDto {
     private Integer price;
     private LocalDate endDate;
 
-    private List<String> filePath = new ArrayList<>();
-    private List<String> fileURL = new ArrayList<>();
-
     private static ModelMapper modelMapper = new ModelMapper();
-
-    public Post createPost() {
-        return modelMapper.map(this, Post.class);
-    }
 
     public static PostDto of(Post post) {
         return modelMapper.map(post, PostDto.class);

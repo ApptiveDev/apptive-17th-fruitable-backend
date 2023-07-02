@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @Setter
@@ -31,6 +30,5 @@ public class PostRequestDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
-    private List<String> localFilePath;
 }
 

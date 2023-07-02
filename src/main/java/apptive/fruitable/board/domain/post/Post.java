@@ -43,16 +43,6 @@ public class Post extends BaseEntity {
     private Integer price;
     private LocalDate endDate;
 
-    @Column
-    @Convert(converter = StringListConverter.class)
-    private List<String> filePath;
-
-    @Column
-    @Convert(converter = StringListConverter.class)
-    private List<String> fileURL;
-    @Column
-    @Convert(converter = StringListConverter.class)
-    private List<String> localFilePath;
 
     public void updatePost(PostRequestDto postDto) {
         this.userId = postDto.getUserId();
@@ -62,6 +52,5 @@ public class Post extends BaseEntity {
         this.content =  postDto.getContent();
         this.price = postDto.getPrice();
         this.endDate = postDto.getEndDate();
-        this.localFilePath = postDto.getLocalFilePath();
     }
 }
